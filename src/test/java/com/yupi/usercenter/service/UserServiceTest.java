@@ -5,8 +5,15 @@ import com.yupi.usercenter.model.domain.request.UserRegisterRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 用户服务测试
@@ -18,6 +25,80 @@ public class UserServiceTest {
 
     @Resource
     private UserService userService;
+
+    /**
+     * 百万数据插入————mybatisplus之批处理
+     */
+    @Test
+    void testMybatisPlusBatch() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        final int INSERT_NUM = 10000;
+        List<User> userList = new ArrayList<>();
+        for (int i = 0; i < INSERT_NUM; i++) {
+            User user = new User();
+            user.setUsername("yupi");
+            user.setUserAccount("yupi" + i);
+            user.setGender(0);
+            user.setUserPassword("b0dd3697a192885d7c055db46155b26a");
+            user.setPhone("18812345678");
+            user.setEmail("abc@qq.com");
+            userList.add(user);
+        }
+        userService.saveBatch(userList, 1000);
+
+        stopWatch.stop();
+        System.out.println(stopWatch.getLastTaskTimeMillis());
+
+
+    }
+
+    /**
+     * 百万数据插入————多线程加批处理插入
+     */
+    @Test
+    void testThroadInsert() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        final int INSERT_NUM = 10000;
+        int j = 0;
+
+        List<CompletableFuture<Void>> futureList = new ArrayList<>();
+        //线程安全的集合
+//        List<CompletableFuture<Void>> futureList = Collections.synchronizedList(new ArrayList<>());
+//        List list = new CopyOnWriteArrayList();
+            for (int i = 0; i < 10; i++) {
+            List<User> userList = new ArrayList<>();
+            while (true) {
+                j++;
+                User user = new User();
+                user.setUsername("yupi");
+                user.setUserAccount("yupi" + i);
+                user.setGender(0);
+                user.setUserPassword("b0dd3697a192885d7c055db46155b26a");
+                user.setPhone("18812345678");
+                user.setEmail("abc@qq.com");
+                userList.add(user);
+                if (j%10000 ==0){
+                    break;
+                }
+            }
+            //异步任务
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                userService.saveBatch(userList, 10000);
+            });
+            futureList.add(future);
+        }
+
+        CompletableFuture.allOf(futureList.toArray(new CompletableFuture[]{})).join();
+
+        stopWatch.stop();
+        System.out.println(stopWatch.getLastTaskTimeMillis());
+
+
+    }
 
     @Test
     public void testAddUser() {
@@ -93,7 +174,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void testUserRegister(){
+    void testUserRegister() {
         UserRegisterRequest register = new UserRegisterRequest();
         register.setUserAccount("dogbin");
         register.setUserPassword("12345678");

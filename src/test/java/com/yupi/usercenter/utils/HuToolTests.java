@@ -1,12 +1,21 @@
 package com.yupi.usercenter.utils;
+import java.util.ArrayList;
+import java.util.Date;
 
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import com.yupi.usercenter.model.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StopWatch;
 
+import javax.annotation.Resource;
 import java.awt.*;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @SpringBootTest
 public class HuToolTests {
@@ -18,5 +27,11 @@ public class HuToolTests {
         File f1 = FileUtil.file(path);
         File f2 = FileUtil.file("C:\\Users\\mechrev\\Desktop\\wechat2.jpg");
         ImgUtil.convert(f1,f2);
+    }
+    @Test
+    void testDate(){
+        System.err.println(LocalDate.now());
+        System.err.println(LocalTime.now());
+        System.err.println(LocalDateTime.now());
     }
 }
