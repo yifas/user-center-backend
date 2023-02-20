@@ -12,6 +12,7 @@ import com.yupi.usercenter.model.domain.request.UserLoginRequest;
 import com.yupi.usercenter.model.domain.request.UserRegisterRequest;
 import com.yupi.usercenter.model.domain.vo.UserQueryVO;
 import com.yupi.usercenter.service.UserService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +33,7 @@ import static com.yupi.usercenter.contant.UserConstant.USER_LOGIN_STATE;
  *
  * @author yupi
  */
+@Api(tags = "用户模块")
 @RestController
 @RequestMapping("/user")
 @Slf4j
@@ -39,6 +41,7 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
 
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
