@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 
 @SpringBootTest
 public class HuToolTests {
@@ -33,5 +34,14 @@ public class HuToolTests {
         System.err.println(LocalDate.now());
         System.err.println(LocalTime.now());
         System.err.println(LocalDateTime.now());
+    }
+
+    @Test
+    void testInteger(){
+        Integer i = 6;
+        Integer j = 6;
+//        System.out.println(i==j);
+        String s = String.valueOf(new Random().nextInt(899999) + 100000);
+        System.err.println(s);
     }
 }
